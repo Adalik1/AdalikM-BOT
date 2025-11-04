@@ -1,0 +1,12 @@
+# entornos
+.env
+.venv/
+__pycache__/
+
+# datos persistentes
+data/
+storage/
+AdalikM.db
+
+# docker / logs
+*.log
