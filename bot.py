@@ -9,8 +9,15 @@ from collections import defaultdict
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 from io import BytesIO
-from telegram import InputFile
-from telegram import Update
+from telegram import Update, InputFile
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+)
+from telegram.ext import CallbackQueryHandler
+from telegram.constants import ParseMode
 from telegram.ext import (
     ApplicationBuilder,
     ContextTypes,
@@ -202,11 +209,13 @@ async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "Demasiadas peticiones; intenta de nuevo en un momento."
             )
         await update.message.reply_text(
-            "Envíame un archivo .txt como documento y te regreso una *clave*.\n"
-            f"La clave es de un solo uso y expira en {EXPIRY_HOURS}h.\n"
-            "Para descargar: /get <clave>\n"
-            "Ayuda: /help",
-            parse_mode="Markdown",
+            f"🔥💳 *BOT OFICIAL ADALIK CORP* 💳🔥\n\n\n"
+            + "*_¿Que puede hacer este bot?_*\n\n"
+            + "💎_/get \<clave\>_  ✦✧✦✧✦  _descargar lote/unidad CC_\n"
+            + "💎_/status \<clave\>_  ✦✧✦✧✦  _vigencia y tiempo rest\. de clave_\n"
+            + "💎_/help_  ✦✧✦✧✦  _comandos de utilidad_\n\n\n\n"
+            + "_Adalik Corp®_",
+            parse_mode=ParseMode.MARKDOWN_V2,
         )
     except Exception:
         # Error silencioso para no filtrar trazas a usuarios
@@ -220,17 +229,13 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "Demasiadas peticiones; intenta de nuevo en un momento."
             )
         msg = (
-            "📦 *AdalikM Bot ayuda*\n\n"
-            "1) Envíame un .txt como documento → te doy una *clave* (expira en "
-            f"{EXPIRY_HOURS}h y es de un solo uso).\n"
-            "2) Comparte la clave; quien la tenga usa: `/get <clave>`.\n\n"
-            "Comandos:\n"
-            "• /start – mensaje de bienvenida\n"
-            "• /help – esta ayuda\n"
-            "• /get <clave> – descarga por clave\n"
-            "• /status <clave> – ver si sigue vigente y tiempo restante\n"
-            "• /id – devuelve tu ID\n"
-            "• /ping – ping de salud\n"
+            "📦 *ADALIK CORP HELPER* 📦\n\n"
+            "✨ *Comandos disponibles:*\n"
+            "> • _/start_ → mensaje de bienvenida\n"
+            "> • _/help_ → muestra esta ayuda\n"
+            "> • _/id_ → devuelve tu identificador de usuario\n"
+            "> • _/ping_ → comprobación de estado del bot\n\n"
+            "🕒 *Las claves expiran automáticamente tras 24 horas y son de un solo uso*\n"
         )
         await update.message.reply_text(msg, parse_mode="Markdown")
     except Exception:
@@ -281,7 +286,7 @@ async def status_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 hrs = int(remaining.total_seconds() // 3600)
                 mins = int((remaining.total_seconds() % 3600) // 60)
                 return await update.message.reply_text(
-                    f"Sigue vigente para *{os.path.basename(filename)}*. "
+                    f"Vigencia del archivo *{os.path.basename(filename)}*. "
                     f"Tiempo restante: {hrs}h {mins}m.",
                     parse_mode="Markdown",
                 )
@@ -379,8 +384,8 @@ async def handle_doc(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await db.commit()
 
         await msg.reply_text(
-            f"Clave de descarga: {key}\n"
-            f"Usa `/get {key}` (una sola vez, expira en {EXPIRY_HOURS}h).",
+            f"Clave de descarga:\n"
+            f"Usa /get {key}\n Clave de un solo uso, expira en {EXPIRY_HOURS}h.",
         )
     except Exception:
         try:
@@ -534,7 +539,7 @@ def main():
     app.add_handler(CommandHandler("get", get_cmd))
     app.add_handler(CommandHandler("status", status_cmd))
     app.add_handler(CommandHandler("ping", ping_cmd))
-    app.add_handler(CommandHandler("id", id_cmd))  # tu nuevo comando /id
+    app.add_handler(CommandHandler("id", id_cmd))
     app.add_handler(MessageHandler(filters.Document.ALL, handle_doc))
 
     # Purga periódica (puedes agendar una corrutina en JobQueue)

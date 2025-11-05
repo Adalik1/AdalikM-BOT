@@ -1,0 +1,23 @@
+services:
+  adalikm:
+    build: .
+    container_name: adalikm-dev
+    profiles: ["dev"]
+    environment:
+      BOT_TOKEN: "${BOT_TOKEN}"
+      EXPIRY_HOURS: "${EXPIRY_HOURS:-24}"
+      AUTH_FORWARDERS: "${AUTH_FORWARDERS}"
+      MAX_BYTES: "${MAX_BYTES:-2000000}"
+      MIN_INTERVAL: "${MIN_INTERVAL:-1.0}"
+      AUTO_PURGE_INTERVAL: "${AUTO_PURGE_INTERVAL:-3600}"
+      DB_PATH: "/data/AdalikM.db"
+      STORAGE_DIR: "/data/storage"
+    volumes:
+      - ./:/app              # 👈 tu código vivo
+      - ./data:/data
+    command: >
+      bash -lc "
+      pip install --no-cache-dir watchfiles &&
+      watchfiles --filter python 'python /app/bot.py' /app
+      "
+    restart: unless-stopped
