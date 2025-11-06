@@ -6,13 +6,18 @@ services:
       BOT_TOKEN: "${BOT_TOKEN}"
       EXPIRY_HOURS: "${EXPIRY_HOURS:-24}"
       AUTH_FORWARDERS: "${AUTH_FORWARDERS}"
+      ALLOWED_UPLOADERS: "${ALLOWED_UPLOADERS:-}"
       MAX_BYTES: "${MAX_BYTES:-2000000}"
       MIN_INTERVAL: "${MIN_INTERVAL:-1.0}"
       AUTO_PURGE_INTERVAL: "${AUTO_PURGE_INTERVAL:-3600}"
       DB_PATH: "/data/AdalikM.db"
       STORAGE_DIR: "/data/storage"
+      PYTHONUNBUFFERED: "1"
     volumes:
       - ./data:/data
+    working_dir: /app
+    command: >
+      python -u /app/bot.py
     restart: unless-stopped
     logging:
       driver: "json-file"
