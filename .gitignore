@@ -10,3 +10,4 @@ AdalikM.db
 
 # docker / logs
 *.log
+docker-compose.dev.yml
